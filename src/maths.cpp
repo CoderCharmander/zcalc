@@ -28,6 +28,7 @@ result parse_base(const char *exp, size_t &idx) {
     if (exp[idx] != ')') {
       return std::unexpected("() mismatch");
     }
+    ++idx;
     return r;
   } else if (exp[idx] == '.' || (exp[idx] >= '0' && exp[idx] <= '9')) {
     const char *begin = &exp[idx];
