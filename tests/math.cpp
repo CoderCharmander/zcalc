@@ -19,6 +19,7 @@ TEST(ZCalcTest, Errors) {
     EXPECT_FALSE(math::evaluate("5+()").has_value());
     EXPECT_FALSE(math::evaluate("***").has_value());
     EXPECT_FALSE(math::evaluate("7+5()").has_value());
+    EXPECT_FALSE(math::evaluate("7+(5)?").has_value());
 }
 
 TEST(ZCalcTest, Basic) {

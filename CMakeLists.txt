@@ -57,6 +57,7 @@ add_subdirectory(src)
 # NOTE: without LTO, u8g2 overflows and the build fails
 # ...but the Pico SDK crashes and burns when LTO is applied to it
 # Additionally, if CLN is LTO-d, the linker starts taking up all the RAM and violently swapping
+# TODO use a good linker
 set_property(TARGET u8g2 PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 #target_compile_options(no_rtti INTERFACE -fno-rtti)
 #target_link_libraries(cln PRIVATE no_rtti)
