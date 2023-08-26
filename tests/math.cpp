@@ -12,7 +12,10 @@ TEST(ZCalcTest, OrderOfOps) {
 }
 TEST(ZCalcTest, Floats) {
     // float magic!
-    EXPECT_TRUE(math::evaluate("0.1+0.2") == cln::cl_LF("0.3"));
+    auto a = math::evaluate("0.1+0.2");
+    EXPECT_TRUE(a.has_value());
+    EXPECT_TRUE(a == math::evaluate("0.3"));
+    EXPECT_TRUE(a == cln::cl_RA("3/10"));
 }
 TEST(ZCalcTest, Errors) {
     EXPECT_FALSE(math::evaluate("((").has_value());

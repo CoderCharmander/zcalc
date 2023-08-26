@@ -5,6 +5,7 @@ include(FetchContent)
 # Defaults, change as needed
 set(PICO_SDK_FETCH_FROM_GIT ON CACHE STRING "")
 set(PICO_BOARD pico_w CACHE STRING "")
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE STRING "")
 
 include(pico_sdk_import.cmake)
 

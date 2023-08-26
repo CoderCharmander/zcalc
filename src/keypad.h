@@ -36,7 +36,11 @@ constexpr uint32_t PIN_BEGIN = 2;
 constexpr uint32_t COLUMNS = 4;
 constexpr uint32_t ROWS = 5;
 constexpr key DEFAULT_MAIN_KP_KEYS[ROWS * COLUMNS] = {
-    ADD, SUB, MUL, DIV, N7, N8, N9, LEFT, N4, N5, N6, RIGHT, N1, N2, N3, BACKSPACE, ALT, N0, DECIMAL, ENTER,
+    ADD, SUB, MUL, DIV,
+    N7, N8, N9, LEFT,
+    N4, N5, N6, RIGHT,
+    N1, N2, N3, BACKSPACE,
+    ALT, N0, DECIMAL, ENTER,
 };
 
 constexpr uint8_t DEFAULT_MAIN_KP_ROWS[] = {10, 9, 8, 7, 6};
