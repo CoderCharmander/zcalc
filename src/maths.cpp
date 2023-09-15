@@ -40,6 +40,7 @@ result parse_number(const char *exp, size_t &idx) {
 
 result parse_base(const char *exp, size_t &idx) {
     if (!exp[idx]) { return std::unexpected("unexp EOL"); }
+    std::expected<cln::cl_R, const char*> o;
     if (exp[idx] == '(') {
         auto r = parse_sum(exp, ++idx);
         if (!r) { return r; }
@@ -62,7 +63,12 @@ result parse_exp(const char *exp, size_t &idx) {
         // let's just assume that we aren't getting complex numbers
         *o = cln::realpart(cln::expt(*o, *r));
     }
-    return o;
+    auto r = parse_exp(exp, idx);
+    if (r) {
+        return *o * *r;
+    } else {
+        return o;
+    }
 }
 
 result parse_neg(const char *exp, size_t &idx) {

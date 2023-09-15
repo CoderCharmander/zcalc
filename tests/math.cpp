@@ -8,6 +8,8 @@ TEST(ZCalcTest, OrderOfOps) {
     EXPECT_EQ(math::evaluate("1+2*3"), 7);
     EXPECT_EQ(math::evaluate("-10^2"), -100);
     EXPECT_EQ(math::evaluate("(-10)^2"), 100);
+    EXPECT_EQ(math::evaluate("(3)(3)3"), 27);
+    EXPECT_EQ(math::evaluate("2(-10)^2"), 200);
     EXPECT_TRUE(math::evaluate("10^(-1)") == cln::cl_RA("1/10"));
 }
 TEST(ZCalcTest, Floats) {
@@ -28,6 +30,7 @@ TEST(ZCalcTest, Errors) {
 TEST(ZCalcTest, Basic) {
     EXPECT_EQ(math::evaluate("1+1"), 2);
     EXPECT_EQ(math::evaluate("1-1"), 0);
+    EXPECT_EQ(math::evaluate("1--1"), 2);
     EXPECT_EQ(math::evaluate("6/3"), 2);
     EXPECT_EQ(math::evaluate("3*3"), 9);
 }

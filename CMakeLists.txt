@@ -21,6 +21,8 @@ project(zcalc C CXX ASM)
 add_subdirectory("${freertos-kernel_SOURCE_DIR}" "${freertos-kernel_BINARY_DIR}")
 enable_testing()
 
+# GiNaC needs RTTI. This heavily inflates the binaries, though.
+# We're not using GiNaC at the moment.
 set(PICO_CXX_ENABLE_RTTI OFF)
 set(PICO_CXX_ENABLE_EXCEPTIONS ON)
 
@@ -42,7 +44,7 @@ function(fetch_cas)
     # CLN generates an incorrect #define when CMAKE_SYSTEM_PROCESSOR contains dashes (such as `cortex-m0`)
     # Make a function so changes are scoped
     set(CMAKE_SYSTEM_PROCESSOR "arm")
-cmake_policy(SET CMP0069 NEW)
+    cmake_policy(SET CMP0069 NEW)
     FetchContent_Declare(CLN GIT_REPOSITORY https://gitlab.com/CoderCharmander/cln-embedded.git GIT_TAG 4699370f13de1bbbaf2e979fa6ba34b54be61a84)
     FetchContent_MakeAvailable(CLN)
 #    target_compile_options(cln PRIVATE -fno-rtti)
