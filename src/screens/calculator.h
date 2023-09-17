@@ -5,7 +5,7 @@ namespace screens::calculator {
 void enter();
 void update(u8g2_t *u8g2);
 
-enum class fraction_format {
+enum fraction_format {
     APPROX_DECIMAL,
     EXACT_DECIMAL,
     RATIONAL,

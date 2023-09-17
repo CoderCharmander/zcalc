@@ -13,7 +13,7 @@
 
 namespace screens::calculator {
 
-uint cur_pos = 3;
+uint cur_pos = 0;
 constexpr uint8_t FONT_WIDTH = 6;
 constexpr uint8_t FONT_HEIGHT = 9;
 uint8_t cur_counter = 0;
@@ -23,13 +23,14 @@ std::string result;
 std::expected<cln::cl_R, const char *> result_number;
 bool altmode = false;
 
+void set_display(uint8_t arg) {}
+
 screens::menu::menu_item display_opts_menu[] = {
     {"Exact fraction", false, set_display, fraction_format::RATIONAL},
     {"Exact decimal", false, set_display, fraction_format::EXACT_DECIMAL},
     {"Approximate decimal", false, set_display, fraction_format::APPROX_DECIMAL}
 };
 
-//screens::menu::
 
 union output_data {
     struct {

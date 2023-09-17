@@ -52,8 +52,8 @@ int main() {
     cyw43_arch_init();
     stdio_init_all();
     // Disable the MPU. Just to make sure that JIT compilation won't crash & burn.
-    *((volatile uint32_t *)M0PLUS_MPU_CTRL_OFFSET) = 0;
-    u8g2_Setup_st7565_erc12864_alt_f(&u8g2, U8G2_R0, u8x8_byte_4wire_sw_spi, display_rp2040::cb_gpio_delay);
+    //*((volatile uint32_t *)M0PLUS_MPU_CTRL_OFFSET) = 0;
+    u8g2_Setup_st7565_erc12864_alt_f(&u8g2, U8G2_R2, u8x8_byte_4wire_sw_spi, display_rp2040::cb_gpio_delay);
     u8g2_InitDisplay(&u8g2);
     u8g2_SetPowerSave(&u8g2, false);
     u8g2_SetContrast(&u8g2, 70);
