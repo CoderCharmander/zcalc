@@ -8,12 +8,12 @@ namespace screens::menu {
 menu *curr_menu = &main_menu;
 
 menu_item main_menu_items[]{
-    {"Fraction display", true, nullptr},
-    {"Internet connection", true, nullptr},
+    {"Fraction mode", true, [](uint8_t arg) {set_submenu(calculator::disp_menu);}},
+    {"Test menu item", true, nullptr},
     {"Test menu item", false, nullptr},
-    {"Windows 2000", false, nullptr},
-    {"Bluetooth", true, nullptr},
-    {"Erase flash", true, nullptr},
+    {"Test menu item", false, nullptr},
+    {"Test menu item", true, nullptr},
+    {"Test menu item", true, nullptr},
 };
 
 size_t cur_pos;
@@ -21,7 +21,7 @@ size_t cur_offset;
 
 constexpr int ITEM_HEIGHT = 16;
 constexpr int ITEM_TEXT_POS = 13;
-constexpr int MAX_ITEMS = SCREEN_HEIGHT / ITEM_HEIGHT;
+constexpr size_t MAX_ITEMS = SCREEN_HEIGHT / ITEM_HEIGHT;
 constexpr int SUBMENU_ARROW_POS_X = -12;
 constexpr int SUBMENU_ARROW_POS_Y = 12;
 constexpr const char* SUBMENU_ARROW_STRING = "\x4e";
@@ -48,14 +48,14 @@ void update(u8g2_t *u8g2) {
         }
     }
     if (pressed[keypad::RIGHT]) {
-        if (cur_pos < MAX_ITEMS - 2 || cur_offset == main_menu.size - MAX_ITEMS && cur_pos < MAX_ITEMS - 1) {
+        if (cur_pos < MAX_ITEMS - 2 || cur_offset == curr_menu->size - MAX_ITEMS && cur_pos < MAX_ITEMS - 1) {
             ++cur_pos;
-        } else if (cur_pos >= MAX_ITEMS - 2 && cur_offset < main_menu.size - MAX_ITEMS) {
+        } else if (cur_pos >= MAX_ITEMS - 2 && cur_offset < curr_menu->size - MAX_ITEMS) {
             ++cur_offset;
         }
     }
-    if (cur_pos + cur_offset >= main_menu.size) {
-        cur_pos = main_menu.size - 1 - cur_offset;
+    if (cur_pos + cur_offset >= curr_menu->size) {
+        cur_pos = curr_menu->size - 1 - cur_offset;
     }
 
     if (pressed[keypad::ENTER]) {
@@ -66,7 +66,7 @@ void update(u8g2_t *u8g2) {
 
     u8g2_ClearBuffer(u8g2);
     u8g2_SetFont(u8g2, u8g2_font_6x13_tf);
-    for (int i = 0; i < MAX_ITEMS; ++i) {
+    for (int i = 0; i < std::min(MAX_ITEMS, curr_menu->size - cur_offset); ++i) {
         if (i == cur_pos) {
             u8g2_SetDrawColor(u8g2, 1);
             u8g2_DrawBox(u8g2, 0, ITEM_HEIGHT * i, SCREEN_WIDTH, ITEM_HEIGHT);

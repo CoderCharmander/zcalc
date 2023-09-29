@@ -2,6 +2,8 @@
 #include "../keypad.h"
 #include "../maths.h"
 #include "cln/floatformat.h"
+#include "cln/object.h"
+#include "cln/rational.h"
 #include "cln/real_io.h"
 #include "menu.h"
 #include "u8g2.h"
@@ -10,6 +12,7 @@
 #include <pico/stdlib.h>
 #include <sstream>
 #include <string>
+#include <variant>
 
 namespace screens::calculator {
 
@@ -20,33 +23,100 @@ uint8_t cur_counter = 0;
 bool cur_show = true;
 std::string expr;
 std::string result;
-std::expected<cln::cl_R, const char *> result_number;
+std::expected<cln::cl_R, const char *> result_number(std::unexpected{""});
 bool altmode = false;
 
-void set_display(uint8_t arg) {}
+namespace output {
 
-screens::menu::menu_item display_opts_menu[] = {
-    {"Exact fraction", false, set_display, fraction_format::RATIONAL},
-    {"Exact decimal", false, set_display, fraction_format::EXACT_DECIMAL},
-    {"Approximate decimal", false, set_display, fraction_format::APPROX_DECIMAL}
+struct rational {
+    std::string a, b;
 };
 
-
-union output_data {
-    struct {
-        std::string a, b;
-    } rational;
-    struct {
-        std::string num;
-        // First decimal digit that is repeating, counted from the back. 0 is no repetition. 1 is the last digit.
-        uint8_t first_repeating;
-    } exact_decimal;
-    struct {
-        double num;
-    } approx_decimal;
+struct exact_decimal {
+    std::string a;
+    // First decimal digit that is repeating, counted from the back. 0 is no repetition. 1 is the last digit.
+    uint8_t first_repeating;
 };
 
+struct approx_decimal {
+    std::string a;
+};
 
+struct error {
+    const char *msg;
+};
+
+struct empty {};
+
+using data = std::variant<rational, exact_decimal, approx_decimal, error, empty>;
+
+} // namespace output
+
+output::data out_data{output::empty{}};
+output_format out_format{RATIONAL};
+
+// dear CLN, please expose an API for this
+inline bool is_float(const cln::cl_R &x) {
+    printf("IF \n");
+    if (!x.pointer_p()) {
+        if (x.nonpointer_tag() == cl_SF_tag) { return true; }
+    } else if (x.pointer_type()->flags & cl_class_flags_subclass_float) {
+        printf("NPtr\n");
+        return true;
+    }
+    printf("Exit\n");
+    return false;
+}
+
+inline std::string to_string(const cln::cl_I &x) {
+    std::stringstream ss;
+    ss << x;
+    return ss.str();
+}
+
+void set_fraction_format(uint8_t arg) {
+    out_format.fformat = (fraction_format)arg;
+    printf("SFF \n");
+    if (!result_number.has_value()) {
+        printf("SFF print error\n");
+        out_data = output::error{result_number.error()};
+        return;
+    }
+    printf("SFF number\n");
+    if (is_float(*result_number) || arg == APPROX_DECIMAL) {
+        printf("SFF float\n");
+        out_data = output::approx_decimal{std::to_string(cln::double_approx(*result_number))};
+        return;
+    }
+    printf("SFF rat\n");
+    cln::cl_RA r = As(cln::cl_RA)(*result_number);
+    printf("SFF conv done\n");
+    cln::cl_I n = cln::numerator(r), d = cln::denominator(r);
+    if (d == 1) {
+        out_data = output::approx_decimal{to_string(n)};
+        return;
+    }
+    output::rational thing;
+    switch (arg) {
+    case RATIONAL:
+        printf("SFF rat\n");
+        thing = output::rational{to_string(n), to_string(d)};
+        out_data = thing;
+        printf("SFF rat ok %s %s\n", thing.a.c_str(), thing.b.c_str());
+        break;
+    case EXACT_DECIMAL:
+        printf("SFF exdec\n");
+        // TODO magic
+        out_data = output::approx_decimal{std::to_string(cln::double_approx(*result_number))};
+        break;
+    }
+}
+
+screens::menu::menu_item display_opts_menu[] = {{"Exact fraction", false, set_fraction_format, fraction_format::RATIONAL},
+                                                {"Exact decimal", false, set_fraction_format, fraction_format::EXACT_DECIMAL},
+                                                {"Approximate decimal", false, set_fraction_format, fraction_format::APPROX_DECIMAL}};
+
+menu::menu disp_menu(display_opts_menu, 3);
 void enter() { curr_upd_fn = update; }
 
 void insert_char(char c) {
@@ -71,13 +141,9 @@ void handle_normkey(keypad::keyset pressed) {
         std::stringstream ss;
         auto r = math::evaluate(expr);
         result_number = r;
-        if (!r) out = r.error();
-        else {
-            extern cln::cl_print_flags default_print_flags;
-            cln::print_real(ss, cln::default_print_flags, *r);
-            out = ss.str().c_str();
-        }
-        result = out;
+        printf("Eval complete \n");
+        set_fraction_format(out_format.fformat);
+        printf("SFF complete \n");
     }
 }
 void handle_altkey(keypad::keyset pressed) {
@@ -86,6 +152,17 @@ void handle_altkey(keypad::keyset pressed) {
     if (pressed[ADD]) { insert_char('('); }
     if (pressed[SUB]) { insert_char(')'); }
     if (pressed[N0]) { screens::menu::enter(); }
+    if (pressed[BACKSPACE]) {
+        expr.clear();
+        cur_pos = 0;
+    }
+    if (pressed[ENTER]) {
+        expr.insert(expr.begin(), '(');
+        expr += ')';
+        cur_pos = expr.size();
+    }
+    if (pressed[LEFT]) { cur_pos = 0; }
+    if (pressed[RIGHT]) { cur_pos = expr.size(); }
 }
 
 void update(u8g2_t *u8g2) {
@@ -109,7 +186,6 @@ void update(u8g2_t *u8g2) {
     u8g2_SetFont(u8g2, u8g2_font_6x13_mf);
     u8g2_SetDrawColor(u8g2, 1);
     u8g2_DrawStr(u8g2, 0, FONT_HEIGHT, expr.c_str());
-    u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * result.size(), SCREEN_HEIGHT, result.c_str());
     if (cur_show) {
         u8g2_SetDrawColor(u8g2, 2);
         u8g2_DrawBox(u8g2, cur_pos * FONT_WIDTH, 0, 2, FONT_HEIGHT);
@@ -117,6 +193,22 @@ void update(u8g2_t *u8g2) {
     if (altmode) {
         u8g2_SetFont(u8g2, u8g2_font_u8glib_4_hr);
         u8g2_DrawStr(u8g2, 0, 64, "ALT");
+    }
+    u8g2_SetDrawColor(u8g2, 1);
+    u8g2_SetFont(u8g2, u8g2_font_6x13_mf);
+    if (std::holds_alternative<output::error>(out_data)) {
+        output::error err = std::get<output::error>(out_data);
+        u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * strlen(err.msg), SCREEN_HEIGHT - 3, err.msg);
+    } else if (std::holds_alternative<output::rational>(out_data)) {
+        output::rational rat = std::get<output::rational>(out_data);
+        unsigned int max = std::max(rat.a.size(), rat.b.size());
+        u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * rat.b.size() - FONT_WIDTH * (max - rat.b.size()) / 2, SCREEN_HEIGHT, rat.b.c_str());
+        u8g2_DrawHLine(u8g2, SCREEN_WIDTH - FONT_WIDTH * max, SCREEN_HEIGHT - FONT_HEIGHT - 2, FONT_WIDTH * max);
+        u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * rat.a.size() - FONT_WIDTH * (max - rat.a.size()) / 2,
+                     SCREEN_HEIGHT - FONT_HEIGHT - 4, rat.a.c_str());
+    } else if (std::holds_alternative<output::approx_decimal>(out_data)) {
+        output::approx_decimal app = std::get<output::approx_decimal>(out_data);
+        u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * app.a.size(), SCREEN_HEIGHT, app.a.c_str());
     }
     u8g2_SendBuffer(u8g2);
 }

@@ -1,9 +1,12 @@
 #pragma once
 #include "../screen.h"
+#include "menu.h"
 
 namespace screens::calculator {
 void enter();
 void update(u8g2_t *u8g2);
+
+extern menu::menu disp_menu;
 
 enum fraction_format {
     APPROX_DECIMAL,
