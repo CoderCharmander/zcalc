@@ -2,6 +2,7 @@
 #pragma ide diagnostic ignored "modernize-raw-string-literal"
 #include "menu.h"
 #include "calculator.h"
+#include "scanner.h"
 
 namespace screens::menu {
 
@@ -9,7 +10,7 @@ menu *curr_menu = &main_menu;
 
 menu_item main_menu_items[]{
     {"Fraction mode", true, [](uint8_t arg) {set_submenu(calculator::disp_menu);}},
-    {"Test menu item", true, nullptr},
+    {"Open scanner", true, [](uint8_t arg) { scanner::enter(); }},
     {"Test menu item", false, nullptr},
     {"Test menu item", false, nullptr},
     {"Test menu item", true, nullptr},

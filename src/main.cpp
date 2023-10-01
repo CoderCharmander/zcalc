@@ -14,6 +14,7 @@
 #include "screen.h"
 #include "screens/calculator.h"
 #include "task.h"
+#include "wireless.h"
 #include "u8g2.h"
 #include "u8g2_rp2040_hal.h"
 
@@ -36,6 +37,7 @@ void vApplicationStackOverflowHook(TaskHandle_t pt, char *taskname) {
 void dot(u8g2_t *u8g2) {}
 
 [[noreturn]] static void ui_task(void *u8) {
+    bluetooth::init();
     TickType_t nextWakeTime = xTaskGetTickCount();
     u8g2_t *u8g2 = (u8g2_t *)u8;
     int n = 0;
