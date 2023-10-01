@@ -85,6 +85,9 @@ void set_fraction_format(uint8_t arg) {
     printf("SFF number\n");
     if (is_float(*result_number) || arg == APPROX_DECIMAL) {
         printf("SFF float\n");
+        double d = cln::double_approx(*result_number);
+        char out[16];
+        snprintf(out, sizeof(out), "%.8f", d);
         out_data = output::approx_decimal{std::to_string(cln::double_approx(*result_number))};
         return;
     }
@@ -201,6 +204,7 @@ void update(u8g2_t *u8g2) {
         u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * strlen(err.msg), SCREEN_HEIGHT - 3, err.msg);
     } else if (std::holds_alternative<output::rational>(out_data)) {
         output::rational rat = std::get<output::rational>(out_data);
+        // Draw a fraction nicely. The smaller number is centered.
         unsigned int max = std::max(rat.a.size(), rat.b.size());
         u8g2_DrawStr(u8g2, SCREEN_WIDTH - FONT_WIDTH * rat.b.size() - FONT_WIDTH * (max - rat.b.size()) / 2, SCREEN_HEIGHT, rat.b.c_str());
         u8g2_DrawHLine(u8g2, SCREEN_WIDTH - FONT_WIDTH * max, SCREEN_HEIGHT - FONT_HEIGHT - 2, FONT_WIDTH * max);
