@@ -38,8 +38,13 @@ uint16_t read_callback(hci_con_handle_t con_handle, uint16_t att_handle, uint16_
 int write_callback(hci_con_handle_t con_handle, uint16_t att_handle, uint16_t transaction_mode, uint16_t offset, uint8_t *buffer,
                    uint16_t buffer_size) {
     //
-    if (att_handle == ATT_CHARACTERISTIC_2a3d590c_85b8_4c4f_a690_a94ae44883bd_01_VALUE_HANDLE) {
+    switch (att_handle) {
+    case ATT_CHARACTERISTIC_2a3d590c_85b8_4c4f_a690_a94ae44883bd_01_VALUE_HANDLE:
         screens::scanner::set_message(reinterpret_cast<char *>(buffer), buffer_size);
+        break;
+    case ATT_CHARACTERISTIC_31ac4628_4a47_4bb3_b775_73c4970305f4_01_VALUE_HANDLE:
+        screens::scanner::set_image(buffer, buffer_size);
+        break;
     }
     printf("BLE write %04X %d \n", att_handle, buffer_size);
     return 0;
