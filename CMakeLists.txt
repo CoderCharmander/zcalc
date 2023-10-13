@@ -56,6 +56,7 @@ endfunction()
 fetch_cas()
 
 #add_library(no_rtti INTERFACE)
+add_subdirectory(cas)
 add_subdirectory(src)
 # NOTE: without LTO, u8g2 overflows and the build fails
 # ...but the Pico SDK crashes and burns when LTO is applied to it

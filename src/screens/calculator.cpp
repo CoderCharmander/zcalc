@@ -1,6 +1,6 @@
 #include "calculator.h"
 #include "../keypad.h"
-#include "../maths.h"
+#include "cas.h"
 #include "cln/floatformat.h"
 #include "cln/object.h"
 #include "cln/rational.h"
@@ -142,7 +142,7 @@ void handle_normkey(keypad::keyset pressed) {
     if (pressed[ENTER]) {
         const char *out;
         std::stringstream ss;
-        auto r = math::evaluate(expr);
+        auto r = zcas::evaluate(expr);
         result_number = r;
         printf("Eval complete \n");
         set_fraction_format(out_format.fformat);

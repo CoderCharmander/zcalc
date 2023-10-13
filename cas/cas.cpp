@@ -1,9 +1,9 @@
-#include "maths.h"
+#include "cas.h"
 #include <cln/complex.h>
 #include <cln/integer_io.h>
 #include <sstream>
 
-namespace math {
+namespace zcas {
 using result = std::expected<cln::cl_R, const char *>;
 result parse_sum(const char *exp, size_t &idx);
 result evaluate(const std::string &str) {
@@ -40,7 +40,7 @@ result parse_number(const char *exp, size_t &idx) {
 
 result parse_base(const char *exp, size_t &idx) {
     if (!exp[idx]) { return std::unexpected("unexp EOL"); }
-    std::expected<cln::cl_R, const char*> o;
+    std::expected<cln::cl_R, const char *> o;
     if (exp[idx] == '(') {
         auto r = parse_sum(exp, ++idx);
         if (!r) { return r; }
@@ -117,4 +117,4 @@ result parse_sum(const char *exp, size_t &idx) {
     }
     return o;
 }
-} // namespace math
+} // namespace zcas

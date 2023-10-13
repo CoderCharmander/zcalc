@@ -8,7 +8,6 @@
 
 #include "FreeRTOS.h"
 #include "keypad.h"
-#include "maths.h"
 #include "pico/time.h"
 #include "portmacro.h"
 #include "screen.h"

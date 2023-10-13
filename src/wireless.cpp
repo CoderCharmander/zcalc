@@ -66,11 +66,13 @@ void packet_handler(uint8_t packet_type, uint16_t channel, uint8_t *packet, uint
         if (HCI_SUBEVENT_LE_CONNECTION_COMPLETE == hci_event_le_meta_get_subevent_code(packet)) {
             con_handle = hci_subevent_le_connection_complete_get_connection_handle(packet);
             printf("BLE connection %04X\n", *con_handle);
+            screens::scanner::reset_image();
         }
         break;
     case HCI_EVENT_DISCONNECTION_COMPLETE:
         con_handle = {};
         printf("BLE disconnect\n");
+        screens::scanner::reset_image();
         break;
     case ATT_EVENT_CAN_SEND_NOW:
         if (con_handle) {

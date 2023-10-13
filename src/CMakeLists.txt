@@ -1,10 +1,11 @@
-add_executable(zcalc main.cpp u8g2_rp2040_hal.cpp keypad.cpp maths.cpp screens/calculator.cpp
+add_executable(zcalc main.cpp u8g2_rp2040_hal.cpp keypad.cpp screens/calculator.cpp
         screens/menu.cpp
         screens/scanner.cpp
         wireless.cpp
         btstack_config.h)
 #target_include_directories(zcalc PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
 target_link_libraries(zcalc PRIVATE
+        zcalc-cas
         FreeRTOS-Kernel
         freertos_kernel_port
         freertos_kernel
