@@ -3,6 +3,7 @@
 #include "cas.h"
 #include <gtest/gtest.h>
 #include <cln/real_io.h>
+#include <ratio_eq.h>
 
 TEST(ZCalcTest, OrderOfOps) {
     EXPECT_EQ(zcas::evaluate("1+2*3"), 7);
@@ -33,4 +34,20 @@ TEST(ZCalcTest, Basic) {
     EXPECT_EQ(zcas::evaluate("1--1"), 2);
     EXPECT_EQ(zcas::evaluate("6/3"), 2);
     EXPECT_EQ(zcas::evaluate("3*3"), 9);
+}
+
+TEST(ZCalcTest, RationalEquationSanity) {
+    zcas::ratio_eq thing;
+    thing.monomial = {{cln::cl_symbol{"x"}, 1}, {cln::cl_symbol{"y"}, -1}};
+    thing.constant = 1;
+    EXPECT_EQ(thing.calculate({2, 1}, 1), 2);
+    EXPECT_EQ(thing.calculate({2, 1}, 0), 1);
+}
+
+TEST(ZCalcTest, RationalEquationStress) {
+    zcas::ratio_eq thing;
+    thing.monomial = {{cln::cl_symbol{"x"}, 2}, {cln::cl_symbol{"y"}, -1}};
+    thing.constant = 1;
+    EXPECT_EQ(thing.calculate({2, 0}, 1), 4);
+    EXPECT_EQ(thing.calculate({0, 4}, 0), 2);
 }
