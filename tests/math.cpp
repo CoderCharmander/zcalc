@@ -46,8 +46,7 @@ TEST(ZCalcTest, RationalEquationSanity) {
 
 TEST(ZCalcTest, RationalEquationStress) {
     zcas::ratio_eq thing;
-    thing.monomial = {{cln::cl_symbol{"x"}, 2}, {cln::cl_symbol{"y"}, -1}};
-    thing.constant = 1;
-    EXPECT_EQ(thing.calculate({2, 0}, 1), 4);
-    EXPECT_EQ(thing.calculate({0, 4}, 0), 2);
+    thing.monomial = {{cln::cl_symbol{"Q1"}, 1}, {cln::cl_symbol{"Q2"}, 1}, {cln::cl_symbol{"r"}, -2}, {cln::cl_symbol{"F"}, -1}};
+    thing.constant = "9000000000";
+    EXPECT_EQ(thing.calculate({cln::cl_R{2} / 1000000, cln::cl_R{3} / 100000000, 0, 60}, 2), cln::cl_R{"3e-3"});
 }
