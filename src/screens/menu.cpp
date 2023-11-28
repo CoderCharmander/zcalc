@@ -2,6 +2,7 @@
 #pragma ide diagnostic ignored "modernize-raw-string-literal"
 #include "menu.h"
 #include "calculator.h"
+#include "rateqsol.h"
 #include "scanner.h"
 
 namespace screens::menu {
@@ -9,9 +10,9 @@ namespace screens::menu {
 menu *curr_menu = &main_menu;
 
 menu_item main_menu_items[]{
-    {"Fraction mode", true, [](uint8_t arg) {set_submenu(calculator::disp_menu);}},
+    {"Fraction mode", true, [](uint8_t arg) { set_submenu(calculator::disp_menu); }},
     {"Open scanner", true, [](uint8_t arg) { scanner::enter(); }},
-    {"Test menu item", false, nullptr},
+    {"RatEqSol", true, [](uint8_t arg) { set_submenu(rateqsol::eqs_menu); }},
     {"Test menu item", false, nullptr},
     {"Test menu item", true, nullptr},
     {"Test menu item", true, nullptr},
@@ -25,7 +26,7 @@ constexpr int ITEM_TEXT_POS = 13;
 constexpr size_t MAX_ITEMS = SCREEN_HEIGHT / ITEM_HEIGHT;
 constexpr int SUBMENU_ARROW_POS_X = -12;
 constexpr int SUBMENU_ARROW_POS_Y = 12;
-constexpr const char* SUBMENU_ARROW_STRING = "\x4e";
+constexpr const char *SUBMENU_ARROW_STRING = "\x4e";
 #define SUBMENU_ARROW_FONT u8g2_font_open_iconic_arrow_1x_t
 
 menu main_menu(main_menu_items, sizeof(main_menu_items) / sizeof(*main_menu_items));
@@ -55,9 +56,7 @@ void update(u8g2_t *u8g2) {
             ++cur_offset;
         }
     }
-    if (cur_pos + cur_offset >= curr_menu->size) {
-        cur_pos = curr_menu->size - 1 - cur_offset;
-    }
+    if (cur_pos + cur_offset >= curr_menu->size) { cur_pos = curr_menu->size - 1 - cur_offset; }
 
     if (pressed[keypad::ENTER]) {
         if (curr_menu->items[cur_offset + cur_pos].action) {
