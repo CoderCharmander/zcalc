@@ -44,7 +44,7 @@ constexpr key DEFAULT_MAIN_KP_KEYS[ROWS * COLUMNS] = {
 };
 
 constexpr uint8_t DEFAULT_MAIN_KP_ROWS[] = {6, 7, 8, 9, 10};
-constexpr uint8_t DEFAULT_MAIN_KP_COLS[] = {3, 2, 1, 0};
+constexpr uint8_t DEFAULT_MAIN_KP_COLS[] = {5, 4, 3, 2};
 
 class keypad {
   public:

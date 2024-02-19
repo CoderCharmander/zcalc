@@ -11,11 +11,8 @@ menu *curr_menu = &main_menu;
 
 menu_item main_menu_items[]{
     {"Fraction mode", true, [](uint8_t arg) { set_submenu(calculator::disp_menu); }},
-    {"Open scanner", true, [](uint8_t arg) { scanner::enter(); }},
+    {"Bluetooth comms", true, [](uint8_t arg) { scanner::enter(); }},
     {"RatEqSol", true, [](uint8_t arg) { set_submenu(rateqsol::eqs_menu); }},
-    {"Test menu item", false, nullptr},
-    {"Test menu item", true, nullptr},
-    {"Test menu item", true, nullptr},
 };
 
 size_t cur_pos;
@@ -57,6 +54,10 @@ void update(u8g2_t *u8g2) {
         }
     }
     if (cur_pos + cur_offset >= curr_menu->size) { cur_pos = curr_menu->size - 1 - cur_offset; }
+    if (cur_offset > 0 && curr_menu->size < MAX_ITEMS) {
+        cur_pos += cur_offset;
+        cur_offset = 0;
+    }
 
     if (pressed[keypad::ENTER]) {
         if (curr_menu->items[cur_offset + cur_pos].action) {
