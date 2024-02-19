@@ -3,7 +3,9 @@ add_executable(zcalc main.cpp u8g2_rp2040_hal.cpp keypad.cpp screens/calculator.
         screens/scanner.cpp
         screens/rateqsol.cpp
         wireless.cpp
-        btstack_config.h)
+        btstack_config.h
+        screens/text_field.cpp
+        screens/text_field.h)
 #target_include_directories(zcalc PRIVATE "${CMAKE_CURRENT_LIST_DIR}")
 target_link_libraries(zcalc PRIVATE
         zcalc-cas

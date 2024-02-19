@@ -127,6 +127,11 @@ void insert_char(char c) {
     ++cur_pos;
 }
 
+void set_expr(const char* s) {
+    expr = s;
+    cur_pos = expr.size();
+}
+
 void handle_normkey(keypad::keyset pressed) {
     using namespace keypad;
     if (pressed[LEFT] && cur_pos > 0) { --cur_pos; }

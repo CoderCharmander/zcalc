@@ -5,6 +5,7 @@
 namespace screens::calculator {
 void enter();
 void update(u8g2_t *u8g2);
+void set_expr(const char *s);
 
 extern menu::menu disp_menu;
 
